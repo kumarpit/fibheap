@@ -20,6 +20,11 @@ typedef ntree_node *da_type;
 typedef darray ntree_node_list;
 
 /**
+ * The max degree of a tree in our fibonacci heap
+ */
+#define FIB_HEAP_MAX_DEGREE 64
+
+/**
  * @brief Represents the fibnoacci heap structure. We store a pointer to the
  * current minimum root node, as well as a the root list.
  */

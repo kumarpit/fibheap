@@ -20,7 +20,7 @@ typedef struct ntree_node {
 } ntree_node;
 
 ntree_node *ntree_create_node(int);
-ntree_node *ntree_insert_sibling(ntree_node *, int);
-ntree_node *ntree_insert_child(ntree_node *, int);
+void ntree_insert_sibling(ntree_node *, ntree_node *);
+void ntree_insert_child(ntree_node *, ntree_node *);
 
 #endif

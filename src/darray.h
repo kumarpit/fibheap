@@ -26,6 +26,12 @@ typedef int da_type;
         list.items[list.count++] = node;                                  \
     } while (0)
 
+#define da_is_empty(list) list.count == 0
+
+#define da_for_each(list, item)                                              \
+    for (size_t _i = 0; _i < (list).count && ((item) = (list).items[_i], 1); \
+         _i++)
+
 typedef struct {
     da_type *items;
     size_t count;

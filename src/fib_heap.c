@@ -1,7 +1,11 @@
 #include "fib_heap.h"
 
 #include <assert.h>
+#include <limits.h>
 #include <stdlib.h>
+
+#include "darray.h"
+#include "ntree.h"
 
 // Forward declarations (internal methods)
 void __compact(fib_heap *);
@@ -46,8 +50,8 @@ int fib_heap_peek(fib_heap *fheap) { return fheap->min->data; }
 int fib_heap_pop(fib_heap *fheap) {
     assert(fheap->min != NULL);
     int min_key = fheap->min->data;
-    ntree_node *child = fheap->min->child;
 
+    ntree_node *child = fheap->min->child;
     while (child) {
         da_append(fheap->root_list, child);
         child = child->sibling;
@@ -57,7 +61,7 @@ int fib_heap_pop(fib_heap *fheap) {
     free(fheap->min);
     fheap->root_list.count--;
 
-    if (fheap->root_list.count == 0) {
+    if (da_is_empty(fheap->root_list)) {
         fheap->min = NULL;
     } else {
         __compact(fheap);
@@ -72,6 +76,50 @@ int fib_heap_pop(fib_heap *fheap) {
 //
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @brief Reduces the size of the root list by linking together trees of the
+ * same degree
+ */
 void __compact(fib_heap *fheap) {
-    return;  // stub
+    ntree_node *degrees_list[FIB_HEAP_MAX_DEGREE + 1] = {NULL};
+    ntree_node *new_min = NULL;
+
+    ntree_node *current;
+    da_for_each(fheap->root_list, current) {
+        if (current == NULL) continue;
+        int degree = current->degree;
+
+        // Keep merging trees of same degrees - we should end up with at most
+        // one tree per degree
+        ntree_node *existing = degrees_list[degree];
+        while (existing != NULL) {
+            int current_key = current->data;
+            int exisiting_key = existing->data;
+            if (exisiting_key < current_key) {
+                ntree_insert_child(current, existing);
+                current = existing;
+            } else {
+                ntree_insert_child(existing, current);
+            }
+            degrees_list[degree] = NULL;
+            degree = current->degree;
+            assert(degree <= FIB_HEAP_MAX_DEGREE);
+        }
+
+        degrees_list[degree] = current;
+
+        int current_key = current->data;
+        if (new_min == NULL || current_key < new_min->data) {
+            new_min = current;
+        }
+    }
+
+    fheap->min = new_min;
+    fheap->root_list.items = NULL;
+    fheap->root_list.count = 0;
+    fheap->root_list.capacity = 0;
+    for (int i = 0; i < FIB_HEAP_MAX_DEGREE + 1; i++) {
+        if (degrees_list[i] == NULL) continue;
+        da_append(fheap->root_list, degrees_list[i]);
+    }
 }
