@@ -37,7 +37,21 @@ Test(FibHeap, pop) {
         fib_heap_insert(fheap, i);
     }
 
+    // Root list >> 3  2  1
+    cr_assert_eq(3, fheap->root_list->count);
+
     cr_assert_eq(1, fib_heap_pop(fheap));
     cr_assert_eq(1, fheap->root_list->count);
     cr_assert_eq(2, fib_heap_peek(fheap));
+    cr_assert_eq(3, fheap->min->child->data);
+
+    // Root list >> 2--3
+
+    cr_assert_eq(2, fib_heap_pop(fheap));
+    cr_assert_eq(1, fheap->root_list->count);
+
+    // Root list >> 3
+
+    cr_assert_eq(3, fib_heap_pop(fheap));
+    cr_assert_eq(0, fheap->root_list->count);
 }

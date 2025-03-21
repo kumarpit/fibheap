@@ -29,7 +29,7 @@ typedef darray ntree_node_list;
  * current minimum root node, as well as a the root list.
  */
 typedef struct {
-    ntree_node *min;
+    ntree_node *min;  // TODO: this should be an index into the root_list
     ntree_node_list *root_list;
 } fib_heap;
 
