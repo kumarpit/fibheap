@@ -47,19 +47,19 @@ int fib_heap_pop(fib_heap *fheap) {
     assert(fheap->min != NULL);
     int min_key = fheap->min->data;
 
+    // Add all children of the minimum root tree as top-level trees in the root
+    // list
     ntree_node *child = fheap->min->child;
     while (child) {
         da_append(fheap->root_list, child);
         child = child->sibling;
     }
-
     // TODO: keep track of free items in the items list
     free(fheap->min);
+    fheap->min = NULL;
     fheap->root_list->count--;
 
-    if (da_is_empty(fheap->root_list)) {
-        fheap->min = NULL;
-    } else {
+    if (!(da_is_empty(fheap->root_list))) {
         __compact(fheap);
     }
 
@@ -100,6 +100,7 @@ void __compact(fib_heap *fheap) {
             degrees_list[degree] = NULL;
             degree = current->degree;
             assert(degree <= FIB_HEAP_MAX_DEGREE);
+            existing = degrees_list[degree];
         }
 
         degrees_list[degree] = current;

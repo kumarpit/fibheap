@@ -21,3 +21,17 @@ Test(DynamicArray, append) {
         cr_assert_eq(i, da_get(arr, i));
     }
 }
+
+Test(DynamicArray, for_each) {
+    darray *arr = da_create();
+
+    for (int i = 0; i < 3; i++) {
+        da_append(arr, i);
+    }
+
+    int i, count = 0;
+    da_for_each(arr, i) {
+        cr_assert_eq(count, i);
+        count++;
+    }
+}
