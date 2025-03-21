@@ -11,18 +11,24 @@
 ntree_node *ntree_create_node(int data) {
     ntree_node *new_node = malloc(sizeof(ntree_node));
     assert(new_node != NULL);
+    new_node->parent = NULL;
     new_node->child = NULL;
     new_node->sibling = NULL;
     new_node->degree = 0;
     new_node->data = data;
+
+    return new_node;
 }
 
 /**
  * @brief Adds a sibling to the elder node's list of siblings
+ * @invariant The elder node MUST have a parent
  */
 void ntree_insert_sibling(ntree_node *node, ntree_node *elder) {
     assert(node != NULL);
     assert(elder != NULL);
+    assert(elder->parent != NULL);
+
     if (elder->sibling == NULL) {
         elder->sibling = node;
     } else {
@@ -33,6 +39,7 @@ void ntree_insert_sibling(ntree_node *node, ntree_node *elder) {
         }
         current_sibling->sibling = node;
     }
+    elder->parent->degree++;
 }
 
 /**
@@ -43,10 +50,12 @@ void ntree_insert_sibling(ntree_node *node, ntree_node *elder) {
 void ntree_insert_child(ntree_node *node, ntree_node *parent) {
     assert(node != NULL);
     assert(parent != NULL);
+
+    node->parent = parent;
     if (parent->child == NULL) {
         parent->child = node;
+        parent->degree = 1;
     } else {
         ntree_insert_sibling(parent->child, node);
     }
-    node->degree++;
 }

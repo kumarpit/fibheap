@@ -17,11 +17,7 @@ fib_heap *fib_heap_create() {
     fib_heap *new_heap = malloc(sizeof(fib_heap));
     assert(new_heap != NULL);
     new_heap->min = NULL;
-
-    ntree_node_list root_list = new_heap->root_list;
-    root_list.items = NULL;
-    root_list.count = 0;
-    root_list.capacity = 0;
+    new_heap->root_list = da_create();
 
     return new_heap;
 }
@@ -59,7 +55,7 @@ int fib_heap_pop(fib_heap *fheap) {
 
     // TODO: keep track of free items in the items list
     free(fheap->min);
-    fheap->root_list.count--;
+    fheap->root_list->count--;
 
     if (da_is_empty(fheap->root_list)) {
         fheap->min = NULL;
@@ -115,9 +111,9 @@ void __compact(fib_heap *fheap) {
     }
 
     fheap->min = new_min;
-    fheap->root_list.items = NULL;
-    fheap->root_list.count = 0;
-    fheap->root_list.capacity = 0;
+    da_destroy(fheap->root_list, false);
+    fheap->root_list = da_create();
+
     for (int i = 0; i < FIB_HEAP_MAX_DEGREE + 1; i++) {
         if (degrees_list[i] == NULL) continue;
         da_append(fheap->root_list, degrees_list[i]);

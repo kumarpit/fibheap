@@ -30,7 +30,7 @@ typedef darray ntree_node_list;
  */
 typedef struct {
     ntree_node *min;
-    ntree_node_list root_list;
+    ntree_node_list *root_list;
 } fib_heap;
 
 fib_heap *fib_heap_create();

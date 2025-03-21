@@ -15,12 +15,13 @@
 typedef struct ntree_node {
     int data;
     int degree;  // in other words, the number of children
+    struct ntree_node *parent;
     struct ntree_node *child;
     struct ntree_node *sibling;
 } ntree_node;
 
 ntree_node *ntree_create_node(int);
-void ntree_insert_sibling(ntree_node *, ntree_node *);
-void ntree_insert_child(ntree_node *, ntree_node *);
+void ntree_insert_sibling(ntree_node *node, ntree_node *elder);
+void ntree_insert_child(ntree_node *node, ntree_node *parent);
 
 #endif

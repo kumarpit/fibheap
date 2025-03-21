@@ -1,6 +1,7 @@
 #ifndef DARRAY_H
 #define DARRAY_H
 
+#include <stdbool.h>
 #include <stdlib.h>
 
 // The type that the variable length array will contain. Defaults to int,
@@ -12,24 +13,24 @@ typedef int da_type;
 
 #define INIT_CAPACITY 256
 
-#define da_append(list, node)                                             \
-    do {                                                                  \
-        if (list.count >= list.capacity) {                                \
-            if (list.capacity == 0) {                                     \
-                list.capacity = INIT_CAPACITY;                            \
-            } else {                                                      \
-                list.capacity *= 2;                                       \
-            }                                                             \
-            list.items =                                                  \
-                realloc(list.items, list.capacity * sizeof(*list.items)); \
-        }                                                                 \
-        list.items[list.count++] = node;                                  \
+#define da_append(list, node)                                                \
+    do {                                                                     \
+        if (list->count >= list->capacity) {                                 \
+            if (list->capacity == 0) {                                       \
+                list->capacity = INIT_CAPACITY;                              \
+            } else {                                                         \
+                list->capacity *= 2;                                         \
+            }                                                                \
+            list->items =                                                    \
+                realloc(list->items, list->capacity * sizeof(*list->items)); \
+        }                                                                    \
+        list->items[list->count++] = node;                                   \
     } while (0)
 
-#define da_is_empty(list) list.count == 0
+#define da_is_empty(list) list->count == 0
 
-#define da_for_each(list, item)                                              \
-    for (size_t _i = 0; _i < (list).count && ((item) = (list).items[_i], 1); \
+#define da_for_each(list, item)                                                \
+    for (size_t _i = 0; _i < (list)->count && ((item) = (list)->items[_i], 1); \
          _i++)
 
 typedef struct {
@@ -37,5 +38,9 @@ typedef struct {
     size_t count;
     size_t capacity;
 } darray;
+
+darray *da_create();
+da_type da_get(darray *, int);
+void da_destroy(darray *, bool should_destroy_items);
 
 #endif
