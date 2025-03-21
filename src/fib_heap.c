@@ -1,6 +1,7 @@
-#include <stdlib.h>
-#include <assert.h>
 #include "fib_heap.h"
+
+#include <assert.h>
+#include <stdlib.h>
 
 /**
  * @brief Initializes a new fibonacci heap
@@ -14,32 +15,33 @@ fib_heap *fib_heap_create() {
     root_list.items = NULL;
     root_list.count = 0;
     root_list.capacity = 0;
-    
+
     return new_heap;
 }
 
 /**
-* @brief Inserts an element into the heap
-*/
+ * @brief Inserts an element into the heap
+ */
 void fib_heap_insert(fib_heap *fheap, int n) {
     ntree_node *new_node = ntree_create_node(n);
     da_append(fheap->root_list, new_node);
-    
+
     if (fheap->min == NULL || n <= fheap->min->data) {
         fheap->min = new_node;
     }
 }
 
 /**
-* @brief Returns the current minimum element from the heap (but does not remove it)
-*/
+ * @brief Returns the current minimum element from the heap (but does not remove
+ * it)
+ */
 int fib_heap_peek(fib_heap *fheap) {
-    return 0; // TODO: stub
+    return 0;  // TODO: stub
 }
 
 /**
-* @brief Returns the current minimum element from the heap and removes it
-*/
+ * @brief Returns the current minimum element from the heap and removes it
+ */
 int fib_heap_pop(fib_heap *fheap) {
-    return 0; // TODO: stub
+    return 0;  // TODO: stub
 }

@@ -6,7 +6,7 @@
 #define NTREE_H
 
 /**
- * @brief Represents a n-ary tree node. The node supports an arbitrary 
+ * @brief Represents a n-ary tree node. The node supports an arbitrary
  * number of children per node by storing as a linked list of siblings.
  * Thus, the `child` pointer points to the first of the children,
  * while the other children are stored as siblings within the first
@@ -14,13 +14,13 @@
  */
 typedef struct ntree_node {
     int data;
-    int degree; // in other words, the number of children
+    int degree;  // in other words, the number of children
     struct ntree_node *child;
     struct ntree_node *sibling;
 } ntree_node;
 
 ntree_node *ntree_create_node(int);
-ntree_node *ntree_insert_sibling(ntree_node*, int);
-ntree_node *ntree_insert_child(ntree_node*, int);
+ntree_node *ntree_insert_sibling(ntree_node *, int);
+ntree_node *ntree_insert_child(ntree_node *, int);
 
 #endif
