@@ -1,5 +1,6 @@
 /**
- * This header file defines the interface to a fibonacci heap.
+ * \file
+ * \brief Defines the interface to a fibonacci heap
  */
 
 #ifndef FIB_HEAP_H

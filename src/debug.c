@@ -19,7 +19,9 @@ void debug_log(const char *file, const char *func, int line, const char *fmt,
 }
 
 /**
- * @brief Debug print function that uses the kernel sys_print
+ * @brief Debug print function that uses the kernel sys_print with the option to
+ * add indentation proportionally to the `level` parameter. Useful for
+ * pretty-printing nested structures like tree.
  */
 void debug_log_indent(const char *file, const char *func, int line, int level,
                       const char *fmt, ...) {

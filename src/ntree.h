@@ -1,5 +1,6 @@
 /**
- * This header file defines the interface to a n-ary tree structure.
+ * \file
+ * \brief Defines the interface to a n-ary tree structure
  */
 
 #ifndef NTREE_H
