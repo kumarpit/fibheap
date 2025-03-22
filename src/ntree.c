@@ -60,6 +60,10 @@ void ntree_insert_child(ntree_node *node, ntree_node *parent) {
     }
 }
 
+/**
+ * @brief Removes the given child node from the tree and optionally free any
+ * associated resources
+ */
 void ntree_remove_child(ntree_node *node, bool should_destroy_node) {
     assert(node != NULL);
     assert(node->parent != NULL);
@@ -84,6 +88,7 @@ void ntree_remove_child(ntree_node *node, bool should_destroy_node) {
     node->sibling = NULL;
 
     if (should_destroy_node) {
+        // TODO: destory its children!
         free(node);
     }
 }
