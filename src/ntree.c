@@ -56,6 +56,6 @@ void ntree_insert_child(ntree_node *node, ntree_node *parent) {
         parent->child = node;
         parent->degree = 1;
     } else {
-        ntree_insert_sibling(parent->child, node);
+        ntree_insert_sibling(node, parent->child);
     }
 }

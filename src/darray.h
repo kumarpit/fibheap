@@ -20,6 +20,8 @@
         list->items[list->count++] = (void *)node;                           \
     } while (0)
 
+// TODO: I should probably add the `if (item == NULL) continue` check to the
+// macro itself
 #define da_is_empty(list) list->count == 0
 
 #define da_for_each(list, item) \
