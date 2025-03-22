@@ -74,21 +74,10 @@ int fib_heap_pop(fib_heap *fheap) {
 
     da_remove(fheap->root_list, fheap->min_index);
 
-    if (fheap->root_list->count > 1) {
+    if (!(da_is_empty(fheap->root_list))) {
         __compact(fheap);
     } else {
-        if (!(da_is_empty(fheap->root_list))) {  // fheap->root_list->count == 1
-            ntree_node *current;
-            da_for_each(fheap->root_list, current) {
-                if (current != NULL) {  // find the one and only non-null
-                                        // element in the root list
-                    fheap->min_index = _i;
-                    break;
-                }
-            }
-        } else {  // fheap->root_list->count == 0
-            fheap->min_index = -1;
-        }
+        fheap->min_index = -1;
     }
 
     debug_printf("end of pop");
