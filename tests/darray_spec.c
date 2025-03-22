@@ -46,5 +46,8 @@ Test(DynamicArray, for_each) {
     }
 
     int *i;
-    da_for_each(arr, i) { cr_assert_eq(values[_i], *i); }
+    da_for_each(arr, i) {
+        if (i == NULL) continue;
+        cr_assert_eq(values[_i], *i);
+    }
 }

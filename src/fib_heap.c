@@ -12,6 +12,7 @@
 void __compact(fib_heap *);
 ntree_node *__get_min_node(fib_heap *);
 ntree_node *__get_node(fib_heap *, size_t index);
+void __dump_node(ntree_node *, int index, int level);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -94,10 +95,17 @@ void fib_heap_dump(fib_heap *fheap) {
     debug_printf("Min Index: %d", fheap->min_index);
     da_for_each(fheap->root_list, current) {
         if (current == NULL) continue;
-        debug_printf("[%zu] Root: %d Children: %d", _i, current->data,
-                     current->degree);
+        __dump_node(current, _i, 0);
     }
     debug_printf("----------------------------------------");
+}
+
+void __dump_node(ntree_node *node, int index, int level) {
+    debug_printf_with_indent(level, "[%d] Root: %d Children: %d", index,
+                             node->data, node->degree);
+    if (node->child != NULL) {
+        __dump_node(node->child, index, level + 1);
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
