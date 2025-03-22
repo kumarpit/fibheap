@@ -50,6 +50,9 @@ int fib_heap_pop(fib_heap *fheap) {
     assert(fheap->min_index != -1);
     int min_key = fib_heap_peek(fheap);
 
+    debug_printf("starting pop: count in root_list -> %zu",
+                 fheap->root_list->count);
+
     // Add all children of the minimum root tree as top-level trees in the root
     // list
     ntree_node *child = __get_min_node(fheap)->child;
@@ -64,10 +67,15 @@ int fib_heap_pop(fib_heap *fheap) {
     fheap->min_index = -1;
     fheap->root_list->count--;
 
-    if (!(da_is_empty(fheap->root_list))) {
+    debug_printf("count before compaction: %zu", fheap->root_list->count);
+
+    if (!(da_is_empty(fheap->root_list)) && !(fheap->root_list->count == 1)) {
         __compact(fheap);
+    } else {
+        fheap->min_index = da_is_empty(fheap->root_list) ? -1 : 1;
     }
 
+    debug_printf("new min_index: %d", fheap->min_index);
     return min_key;
 }
 
@@ -114,7 +122,6 @@ void __compact(fib_heap *fheap) {
         if (new_min_index == -1 ||
             current_key < __get_node(fheap, new_min_index)->data) {
             new_min_index = _i;
-            debug_printf("new_min_index value: %d", new_min_index);
         }
     }
 
@@ -132,12 +139,14 @@ void __compact(fib_heap *fheap) {
         da_append(fheap->root_list, degrees_list[i]);
     }
 
+    debug_printf("ending pop: new count in root_list -> %zu",
+                 fheap->root_list->count);
+
     fheap->min_index = new_min_index;
 }
 
 ntree_node *__get_min_node(fib_heap *fheap) {
     assert(fheap->min_index > -1);
-    debug_printf("min_index value: %d", fheap->min_index);
     return __get_node(fheap, fheap->min_index);
 }
 

@@ -23,11 +23,11 @@ void *da_get(darray *da, size_t index) {
     assert(da != NULL);
     assert(da->items != NULL);
 
-    if (index >= da->count) {
-        debug_error("index %zu out of bounds (size: %zu)", index, da->count);
-        exit(1);
-    }
-
+    // if (index >= da->count) {
+    //     debug_error("index %zu out of bounds (size: %zu)", index, da->count);
+    //     exit(1);
+    // }
+    //
     return (void *)da->items[index];
 }
 

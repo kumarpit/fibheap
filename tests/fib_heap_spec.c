@@ -54,6 +54,7 @@ Test(FibHeap, pop) {
 
     // Root list >> 3
 
+    cr_assert_eq(3, fib_heap_peek(fheap));
     cr_assert_eq(3, fib_heap_pop(fheap));
     cr_assert_eq(0, fheap->root_list->count);
 }
