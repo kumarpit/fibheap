@@ -4,13 +4,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-// The type that the variable length array will contain. Defaults to int,
-// but can really be anything.
-#ifndef DA_TYPE
-#define DA_TYPE
-typedef int da_type;
-#endif
-
 #define INIT_CAPACITY 256
 
 #define da_append(list, node)                                                \
@@ -24,7 +17,7 @@ typedef int da_type;
             list->items =                                                    \
                 realloc(list->items, list->capacity * sizeof(*list->items)); \
         }                                                                    \
-        list->items[list->count++] = node;                                   \
+        list->items[list->count++] = (void *)node;                           \
     } while (0)
 
 #define da_is_empty(list) list->count == 0
@@ -34,13 +27,14 @@ typedef int da_type;
          _i++)
 
 typedef struct {
-    da_type *items;
+    void **items;
     size_t count;
     size_t capacity;
 } darray;
 
 darray *da_create();
-da_type da_get(darray *, int);
+void *da_get(darray *, size_t);
+void da_set(darray *, void *, size_t);
 void da_destroy(darray *, bool should_destroy_items);
 
 #endif

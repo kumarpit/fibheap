@@ -5,7 +5,7 @@
 Test(FibHeap, create) {
     fib_heap *fheap = fib_heap_create();
 
-    cr_assert_eq(NULL, fheap->min);
+    cr_assert_eq(-1, fheap->min_index);
     cr_assert_eq(0, fheap->root_list->count);
 }
 
@@ -16,7 +16,8 @@ Test(FibHeap, insert) {
         fib_heap_insert(fheap, i);
     }
 
-    cr_assert_eq(1, fheap->min->data);
+    cr_assert_eq(
+        1, ((ntree_node *)da_get(fheap->root_list, fheap->min_index))->data);
     cr_assert_eq(3, fheap->root_list->count);
 }
 
@@ -43,7 +44,8 @@ Test(FibHeap, pop) {
     cr_assert_eq(1, fib_heap_pop(fheap));
     cr_assert_eq(1, fheap->root_list->count);
     cr_assert_eq(2, fib_heap_peek(fheap));
-    cr_assert_eq(3, fheap->min->child->data);
+    cr_assert_eq(3, ((ntree_node *)da_get(fheap->root_list, fheap->min_index))
+                        ->child->data);
 
     // Root list >> 2--3
 

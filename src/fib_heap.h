@@ -7,11 +7,8 @@
 
 #include <stdlib.h>
 
-#include "ntree.h"
-
-#define DA_TYPE
-typedef ntree_node *da_type;
 #include "darray.h"
+#include "ntree.h"
 
 /**
  * Fibonacci heaps store a list of n-ary tree structures. We represent this list
@@ -29,7 +26,7 @@ typedef darray ntree_node_list;
  * current minimum root node, as well as a the root list.
  */
 typedef struct {
-    ntree_node *min;  // TODO: this should be an index into the root_list
+    int min_index;
     ntree_node_list *root_list;
 } fib_heap;
 

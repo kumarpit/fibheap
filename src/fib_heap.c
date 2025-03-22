@@ -5,18 +5,21 @@
 #include <stdlib.h>
 
 #include "darray.h"
+#include "debug.h"
 #include "ntree.h"
 
 // Forward declarations (internal methods)
 void __compact(fib_heap *);
+ntree_node *__get_min_node(fib_heap *);
 
 /**
  * @brief Initializes a new fibonacci heap
  */
 fib_heap *fib_heap_create() {
+    debug_printf("size of ntree_node* : %lu", sizeof(ntree_node *));
     fib_heap *new_heap = malloc(sizeof(fib_heap));
     assert(new_heap != NULL);
-    new_heap->min = NULL;
+    new_heap->min_index = -1;
     new_heap->root_list = da_create();
 
     return new_heap;
@@ -29,34 +32,41 @@ void fib_heap_insert(fib_heap *fheap, int n) {
     ntree_node *new_node = ntree_create_node(n);
     da_append(fheap->root_list, new_node);
 
-    if (fheap->min == NULL || n <= fheap->min->data) {
-        fheap->min = new_node;
+    debug_printf("fheap->min_index = %d", fheap->min_index);
+
+    if (fheap->min_index == -1 || n <= fib_heap_peek(fheap)) {
+        debug_printf("setting new min!");
+        fheap->min_index = fheap->root_list->count - 1;
     }
+
+    debug_printf("fheap->min_index = %d", fheap->min_index);
 }
 
 /**
  * @brief Returns the current minimum element from the heap (but does not remove
  * it)
  */
-int fib_heap_peek(fib_heap *fheap) { return fheap->min->data; }
+int fib_heap_peek(fib_heap *fheap) { return __get_min_node(fheap)->data; }
 
 /**
  * @brief Returns the current minimum element from the heap and removes it
  */
 int fib_heap_pop(fib_heap *fheap) {
-    assert(fheap->min != NULL);
-    int min_key = fheap->min->data;
+    assert(fheap->min_index != -1);
+    int min_key = fib_heap_peek(fheap);
 
     // Add all children of the minimum root tree as top-level trees in the root
     // list
-    ntree_node *child = fheap->min->child;
+    ntree_node *child = __get_min_node(fheap)->child;
     while (child) {
         da_append(fheap->root_list, child);
         child = child->sibling;
     }
     // TODO: keep track of free items in the items list
-    free(fheap->min);
-    fheap->min = NULL;
+    // and encapsulate this into a da method
+    free(__get_min_node(fheap));
+    da_set(fheap->root_list, NULL, fheap->min_index);
+    fheap->min_index = -1;
     fheap->root_list->count--;
 
     if (!(da_is_empty(fheap->root_list))) {
@@ -78,10 +88,10 @@ int fib_heap_pop(fib_heap *fheap) {
  */
 void __compact(fib_heap *fheap) {
     ntree_node *degrees_list[FIB_HEAP_MAX_DEGREE + 1] = {NULL};
-    ntree_node *new_min = NULL;
+    int new_min_index = -1;
 
     ntree_node *current;
-    da_for_each(fheap->root_list, current) {
+    da_for_each(fheap->root_list, current) {  // index is available as _i
         if (current == NULL) continue;
         int degree = current->degree;
 
@@ -106,12 +116,14 @@ void __compact(fib_heap *fheap) {
         degrees_list[degree] = current;
 
         int current_key = current->data;
-        if (new_min == NULL || current_key < new_min->data) {
-            new_min = current;
+        if (new_min_index == -1 ||
+            current_key <
+                ((ntree_node *)da_get(fheap->root_list, new_min_index))->data) {
+            new_min_index = _i;
         }
     }
 
-    fheap->min = new_min;
+    fheap->min_index = new_min_index;
     da_destroy(fheap->root_list, false);
     fheap->root_list = da_create();
 
@@ -119,4 +131,10 @@ void __compact(fib_heap *fheap) {
         if (degrees_list[i] == NULL) continue;
         da_append(fheap->root_list, degrees_list[i]);
     }
+}
+
+ntree_node *__get_min_node(fib_heap *fheap) {
+    assert(fheap->min_index > -1);
+    debug_printf("getting minimum node at index %d", fheap->min_index);
+    return da_get(fheap->root_list, fheap->min_index);
 }

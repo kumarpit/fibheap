@@ -2,6 +2,8 @@
 
 #include <assert.h>
 
+#include "debug.h"
+
 /**
  * @brief Initializes a new dynamic array
  */
@@ -17,12 +19,27 @@ darray *da_create() {
 /**
  * @brief Gets the item at index from the array with bounds checking
  */
-da_type da_get(darray *da, int index) {
+void *da_get(darray *da, size_t index) {
     assert(da != NULL);
     assert(da->items != NULL);
 
-    // TODO: add bounds checking
-    return da->items[index];
+    debug_printf("getting array element at index: %zu", index);
+
+    if (index >= da->count) {
+        debug_printf("[ERROR] index %zu out of bounds (size: %zu)", index,
+                     da->count);
+        exit(1);
+    }
+
+    debug_printf("size of void*: %lu", sizeof(void *));
+
+    return (void *)da->items[index];
+}
+
+void da_set(darray *da, void *data, size_t index) {
+    assert(da != NULL);
+    assert(da->items != NULL);
+    da->items[index] = data;
 }
 
 /**
