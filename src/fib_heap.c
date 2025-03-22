@@ -8,10 +8,16 @@
 #include "debug.h"
 #include "ntree.h"
 
-// Forward declarations (internal methods)
+// Forward declarations (private methods)
 void __compact(fib_heap *);
 ntree_node *__get_min_node(fib_heap *);
 ntree_node *__get_node(fib_heap *, size_t index);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// FibHeap interface implementation
+//
+//////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * @brief Initializes a new fibonacci heap
@@ -88,7 +94,7 @@ int fib_heap_pop(fib_heap *fheap) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// Internal method definitions
+// Private method definitions
 //
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -135,6 +141,9 @@ void __compact(fib_heap *fheap) {
     da_destroy(fheap->root_list, false);
     fheap->root_list = da_create();
 
+    // Only add back non-null elements to the new root list. This makes up for
+    // the drawbacks of my dyanmic array implementation (which leaves gaps in
+    // the list in order to support removing elements at arbitrary indices)
     for (int i = 0; i < FIB_HEAP_MAX_DEGREE + 1; i++) {
         if (degrees_list[i] == NULL) {
             if (i < new_min_index) {
@@ -152,11 +161,18 @@ void __compact(fib_heap *fheap) {
     fheap->min_index = new_min_index;
 }
 
+/**
+ * @brief Gets the ntree node containing the current minimum element
+ */
 ntree_node *__get_min_node(fib_heap *fheap) {
     assert(fheap->min_index > -1);
     return __get_node(fheap, fheap->min_index);
 }
 
+/**
+ * @brief Wrapper function to get the ntree node at the given index in the root
+ * list
+ */
 ntree_node *__get_node(fib_heap *fheap, size_t index) {
     return (ntree_node *)da_get(fheap->root_list, index);
 }
