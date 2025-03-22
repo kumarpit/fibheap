@@ -86,6 +86,30 @@ int fib_heap_pop(fib_heap *fheap) {
 }
 
 /**
+ * @brief Merges the other fibonacci heap into self
+ */
+void fib_heap_merge(fib_heap *self, fib_heap *other) {
+    assert(self != NULL);
+    assert(other != NULL);
+
+    ntree_node *node;
+    da_for_each(other->root_list, node) { da_append(self->root_list, node); }
+
+    int self_min = __get_min_node(self)->data;
+    int other_min = __get_min_node(other)->data;
+
+    if (other_min < self_min) {
+        ntree_node *current;
+        da_for_each(self->root_list, current) {
+            if (current->data == other_min) {
+                self->min_index = _i;
+                break;
+            }
+        }
+    }
+}
+
+/**
  * @brief Pretty-prints the state of the heap, useful for debugging relatively
  * small-sized heaps
  */
@@ -95,14 +119,6 @@ void fib_heap_dump(fib_heap *fheap) {
     debug_printf("Min Index: %d", fheap->min_index);
     da_for_each(fheap->root_list, current) { __dump_node(current, _i, 0); }
     debug_printf("----------------------------------------");
-}
-
-void __dump_node(ntree_node *node, int index, int level) {
-    debug_printf_with_indent(level, "[%d] Root: %d Children: %d", index,
-                             node->data, node->degree);
-    if (node->child != NULL) {
-        __dump_node(node->child, index, level + 1);
-    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -187,4 +203,15 @@ ntree_node *__get_min_node(fib_heap *fheap) {
  */
 ntree_node *__get_node(fib_heap *fheap, size_t index) {
     return (ntree_node *)da_get(fheap->root_list, index);
+}
+
+/**
+ * @brief Pretty-print helper to dump fibonacci heap state
+ */
+void __dump_node(ntree_node *node, int index, int level) {
+    debug_printf_with_indent(level, "[%d] Root: %d Children: %d", index,
+                             node->data, node->degree);
+    if (node->child != NULL) {
+        __dump_node(node->child, index, level + 1);
+    }
 }

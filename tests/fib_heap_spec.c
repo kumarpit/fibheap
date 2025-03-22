@@ -70,3 +70,20 @@ Test(FibHeap, pop_stress_test) {
         cr_assert_eq(i, fib_heap_pop(fheap));
     }
 }
+
+Test(FibHeap, merge) {
+    fib_heap *fheap1 = fib_heap_create();
+    for (int i = 0; i < 3; i++) {
+        fib_heap_insert(fheap1, i);
+    }
+
+    fib_heap *fheap2 = fib_heap_create();
+    for (int i = 3; i < 6; i++) {
+        fib_heap_insert(fheap2, i);
+    }
+
+    fib_heap_merge(fheap2, fheap1);
+
+    cr_assert_eq(6, fheap2->root_list->count);
+    cr_assert_eq(0, fib_heap_peek(fheap2));
+}
