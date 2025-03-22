@@ -56,24 +56,27 @@ int fib_heap_pop(fib_heap *fheap) {
     assert(fheap->min_index != -1);
     int min_key = fib_heap_peek(fheap);
 
-    debug_printf("starting pop: count in root_list -> %zu",
-                 fheap->root_list->count);
+    debug_printf("starting pop");
+    debug_printf("heap state:");
+    fib_heap_dump(fheap);
 
     // Add all children of the minimum root tree as top-level trees in the root
     // list
     ntree_node *child = __get_min_node(fheap)->child;
     while (child) {
+        debug_printf("appending child");
         da_append(fheap->root_list, child);
         child = child->sibling;
     }
 
+    debug_printf("heap state after appending children");
+    fib_heap_dump(fheap);
+
     da_remove(fheap->root_list, fheap->min_index);
-    debug_printf("count before compaction: %zu", fheap->root_list->count);
 
     if (fheap->root_list->count > 1) {
         __compact(fheap);
     } else {
-        fheap->min_index = da_is_empty(fheap->root_list) ? -1 : 1;
         if (!(da_is_empty(fheap->root_list))) {  // fheap->root_list->count == 1
             ntree_node *current;
             da_for_each(fheap->root_list, current) {
@@ -88,7 +91,7 @@ int fib_heap_pop(fib_heap *fheap) {
         }
     }
 
-    debug_printf("new min_index: %d", fheap->min_index);
+    debug_printf("end of pop");
     return min_key;
 }
 
@@ -101,10 +104,11 @@ void fib_heap_dump(fib_heap *fheap) {
     debug_printf("-------------Dumping Heap----------------");
     debug_printf("Min Index: %d", fheap->min_index);
     da_for_each(fheap->root_list, current) {
+        if (current == NULL) continue;
         debug_printf("[%zu] Root: %d Children: %d", _i, current->data,
                      current->degree);
     }
-    debug_printf("----------------------------------------\n");
+    debug_printf("----------------------------------------");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -119,7 +123,7 @@ void fib_heap_dump(fib_heap *fheap) {
  */
 void __compact(fib_heap *fheap) {
     ntree_node *degrees_list[FIB_HEAP_MAX_DEGREE + 1] = {NULL};
-    int new_min_index = -1;
+    int min_key = INT_MAX;
 
     ntree_node *current;
     da_for_each(fheap->root_list, current) {  // index is available as _i
@@ -147,9 +151,8 @@ void __compact(fib_heap *fheap) {
         degrees_list[degree] = current;
 
         int current_key = current->data;
-        if (new_min_index == -1 ||
-            current_key < __get_node(fheap, new_min_index)->data) {
-            new_min_index = _i;
+        if (current_key < min_key) {
+            min_key = current_key;
         }
     }
 
@@ -159,21 +162,22 @@ void __compact(fib_heap *fheap) {
     // Only add back non-null elements to the new root list. This makes up for
     // the drawbacks of my dyanmic array implementation (which leaves gaps in
     // the list in order to support removing elements at arbitrary indices)
+    int relative_index = 0;
+    int min_index = 0;
     for (int i = 0; i < FIB_HEAP_MAX_DEGREE + 1; i++) {
         if (degrees_list[i] == NULL) {
-            if (i < new_min_index) {
-                new_min_index--;  // need to account for the fewer elements we
-                                  // are adding to the new root list
-            }
             continue;
         }
         da_append(fheap->root_list, degrees_list[i]);
+        if (degrees_list[i]->data == min_key) {
+            min_index = relative_index;
+        }
+        relative_index++;
     }
 
-    debug_printf("ending pop: new count in root_list -> %zu",
-                 fheap->root_list->count);
-
-    fheap->min_index = new_min_index;
+    fheap->min_index = min_index;
+    debug_printf("heap after compaction:");
+    fib_heap_dump(fheap);
 }
 
 /**

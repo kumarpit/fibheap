@@ -66,10 +66,7 @@ Test(FibHeap, pop_stress_test) {
         fib_heap_insert(fheap, i);
     }
 
-    fib_heap_dump(fheap);
-
     for (int i = 1; i <= 10; i++) {
         cr_assert_eq(i, fib_heap_pop(fheap));
-        fib_heap_dump(fheap);
     }
 }

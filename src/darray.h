@@ -22,9 +22,9 @@
 
 #define da_is_empty(list) list->count == 0
 
-#define da_for_each(list, item)                                                \
-    for (size_t _i = 0; _i < (list)->count && ((item) = (list)->items[_i], 1); \
-         _i++)
+#define da_for_each(list, item) \
+    for (size_t _i = 0;         \
+         _i < (list)->capacity && ((item) = (list)->items[_i], 1); _i++)
 
 typedef struct {
     void **items;
