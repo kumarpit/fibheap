@@ -35,6 +35,13 @@ fib_heap *fib_heap_create() {
 }
 
 /**
+ * @brief Returns true if the heap has no elements in it, false otherwise
+ */
+bool fib_heap_is_empty(fib_heap *fheap) {
+    return da_is_empty(fheap->root_list);
+}
+
+/**
  * @brief Inserts an element into the heap
  */
 ntree_node *fib_heap_insert(fib_heap *fheap, int n) {
@@ -79,7 +86,7 @@ int fib_heap_pop(fib_heap *fheap) {
 
     da_remove(fheap->root_list, fheap->min_index);
 
-    if (!(da_is_empty(fheap->root_list))) {
+    if (!fib_heap_is_empty(fheap)) {
         __compact(fheap);
     } else {
         fheap->min_index = -1;
@@ -113,6 +120,10 @@ void fib_heap_merge(fib_heap *self, fib_heap *other) {
     }
 }
 
+/**
+ * @brief Decrease the value of the given node to the `new_key` value and
+ * re-organize heap to maintain heap invariant
+ */
 void fib_heap_decrease_key(fib_heap *fheap, ntree_node *node, int new_key) {
     assert(node != NULL);
     assert(new_key < node->data);
@@ -125,7 +136,7 @@ void fib_heap_decrease_key(fib_heap *fheap, ntree_node *node, int new_key) {
         }
     }
 
-    if (!(da_is_empty(fheap->root_list))) {
+    if (!fib_heap_is_empty(fheap)) {
         if (new_key < fib_heap_peek(fheap)) {
             ntree_node *current;
             da_for_each(fheap->root_list, current) {
@@ -147,7 +158,7 @@ void fib_heap_dump(fib_heap *fheap) {
     debug_printf("-------------Dumping Heap----------------");
     debug_printf("Min Index: %d", fheap->min_index);
     da_for_each(fheap->root_list, current) { __dump_node(current, _i, 0); }
-    debug_printf("----------------------------------------");
+    debug_printf("-----------------------------------------");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -218,6 +229,9 @@ void __compact(fib_heap *fheap) {
     fib_heap_dump(fheap);
 }
 
+/**
+ * @brief Cuts the given node from its parent and adds it to the root list
+ */
 void __cut(fib_heap *fheap, ntree_node *node) {
     assert(fheap != NULL);
     assert(node != NULL);
