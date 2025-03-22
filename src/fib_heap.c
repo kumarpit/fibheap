@@ -95,8 +95,8 @@ void fib_heap_merge(fib_heap *self, fib_heap *other) {
     ntree_node *node;
     da_for_each(other->root_list, node) { da_append(self->root_list, node); }
 
-    int self_min = __get_min_node(self)->data;
-    int other_min = __get_min_node(other)->data;
+    int self_min = fib_heap_peek(self);
+    int other_min = fib_heap_peek(other);
 
     if (other_min < self_min) {
         ntree_node *current;
