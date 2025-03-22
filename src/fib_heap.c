@@ -93,10 +93,7 @@ void fib_heap_dump(fib_heap *fheap) {
     ntree_node *current;
     debug_printf("-------------Dumping Heap----------------");
     debug_printf("Min Index: %d", fheap->min_index);
-    da_for_each(fheap->root_list, current) {
-        if (current == NULL) continue;
-        __dump_node(current, _i, 0);
-    }
+    da_for_each(fheap->root_list, current) { __dump_node(current, _i, 0); }
     debug_printf("----------------------------------------");
 }
 
@@ -124,7 +121,6 @@ void __compact(fib_heap *fheap) {
 
     ntree_node *current;
     da_for_each(fheap->root_list, current) {  // index is available as _i
-        if (current == NULL) continue;
         int degree = current->degree;
 
         // Keep merging trees of same degrees - we should end up with at most

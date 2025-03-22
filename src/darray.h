@@ -1,3 +1,8 @@
+/**
+ * \file
+ * \brief A simple dynamic array implementation
+ */
+
 #ifndef DARRAY_H
 #define DARRAY_H
 
@@ -20,14 +25,17 @@
         list->items[list->count++] = (void *)node;                           \
     } while (0)
 
-// TODO: I should probably add the `if (item == NULL) continue` check to the
-// macro itself
 #define da_is_empty(list) list->count == 0
 
-#define da_for_each(list, item) \
-    for (size_t _i = 0;         \
-         _i < (list)->capacity && ((item) = (list)->items[_i], 1); _i++)
-
+/**
+ * Loops through every _NON-NULL_ value in the array
+ */
+#define da_for_each(list, item)                                          \
+    for (size_t _i = 0;                                                  \
+         _i < (list)->capacity && ((item) = (list)->items[_i], 1); _i++) \
+        if (!((item) = (list)->items[_i]))                               \
+            continue;                                                    \
+        else
 typedef struct {
     void **items;
     size_t count;
