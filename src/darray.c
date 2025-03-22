@@ -23,18 +23,32 @@ void *da_get(darray *da, size_t index) {
     assert(da != NULL);
     assert(da->items != NULL);
 
-    // if (index >= da->count) {
-    //     debug_error("index %zu out of bounds (size: %zu)", index, da->count);
-    //     exit(1);
-    // }
-    //
+    // NOTE: not checking with count because our array may have gaps because we
+    // support removing elements at arbitrary indices
+    if (index >= da->capacity) {
+        debug_error("index %zu out of bounds (size: %zu)", index, da->count);
+        exit(1);
+    }
+
     return (void *)da->items[index];
 }
 
+/**
+ * @brief Mutate the element at the given index
+ */
 void da_set(darray *da, void *data, size_t index) {
     assert(da != NULL);
     assert(da->items != NULL);
     da->items[index] = data;
+}
+
+/**
+ * @brief Remove the element at the given index
+ */
+void da_remove(darray *da, size_t index) {
+    free(da_get(da, index));
+    da_set(da, NULL, index);
+    da->count--;
 }
 
 /**

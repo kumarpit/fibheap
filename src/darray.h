@@ -34,6 +34,7 @@ typedef struct {
 
 darray *da_create();
 void *da_get(darray *, size_t);
+void da_remove(darray *, size_t);
 void da_set(darray *, void *, size_t);
 void da_destroy(darray *, bool should_destroy_items);
 

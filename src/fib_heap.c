@@ -60,19 +60,26 @@ int fib_heap_pop(fib_heap *fheap) {
         da_append(fheap->root_list, child);
         child = child->sibling;
     }
-    // TODO: keep track of free items in the items list
-    // and encapsulate this into a da method
-    free(__get_min_node(fheap));
-    da_set(fheap->root_list, NULL, fheap->min_index);
-    fheap->min_index = -1;
-    fheap->root_list->count--;
 
+    da_remove(fheap->root_list, fheap->min_index);
     debug_printf("count before compaction: %zu", fheap->root_list->count);
 
-    if (!(da_is_empty(fheap->root_list)) && !(fheap->root_list->count == 1)) {
+    if (fheap->root_list->count > 1) {
         __compact(fheap);
     } else {
         fheap->min_index = da_is_empty(fheap->root_list) ? -1 : 1;
+        if (!(da_is_empty(fheap->root_list))) {  // fheap->root_list->count == 1
+            ntree_node *current;
+            da_for_each(fheap->root_list, current) {
+                if (current != NULL) {  // find the one and only non-null
+                                        // element in the root list
+                    fheap->min_index = _i;
+                    break;
+                }
+            }
+        } else {  // fheap->root_list->count == 0
+            fheap->min_index = -1;
+        }
     }
 
     debug_printf("new min_index: %d", fheap->min_index);
