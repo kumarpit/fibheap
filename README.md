@@ -9,4 +9,4 @@
                                                                      
 ```
 
-A fibonacci heap implementation in C.
+A Fibonacci heap implementation in C. Built for educational purposes and should definitely not be used in production. See [this video](https://www.youtube.com/watch?v=6JxvKfSV9Ns&t=1322s) to learn about Fibonacci heaps.
