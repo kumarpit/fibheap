@@ -6,6 +6,8 @@
 #ifndef NTREE_H
 #define NTREE_H
 
+#include <stdbool.h>
+
 /**
  * @brief Represents a n-ary tree node. The node supports an arbitrary
  * number of children per node by storing as a linked list of siblings.
@@ -16,6 +18,7 @@
 typedef struct ntree_node {
     int data;
     int degree;  // in other words, the number of children
+    bool marked;
     struct ntree_node *parent;
     struct ntree_node *child;
     struct ntree_node *sibling;
@@ -24,5 +27,7 @@ typedef struct ntree_node {
 ntree_node *ntree_create_node(int);
 void ntree_insert_sibling(ntree_node *node, ntree_node *elder);
 void ntree_insert_child(ntree_node *node, ntree_node *parent);
+
+void ntree_remove_child(ntree_node *, bool should_destroy_node);
 
 #endif

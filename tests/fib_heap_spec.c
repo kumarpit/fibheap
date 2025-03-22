@@ -87,3 +87,18 @@ Test(FibHeap, merge) {
     cr_assert_eq(6, fheap2->root_list->count);
     cr_assert_eq(0, fib_heap_peek(fheap2));
 }
+
+Test(FibHeap, decrease_key) {
+    fib_heap *fheap = fib_heap_create();
+
+    ntree_node *nodes[3];
+    for (int i = -1; i < 2; i++) {
+        nodes[i + 1] = fib_heap_insert(fheap, i * 2);
+    }
+
+    fib_heap_pop(fheap);
+    fib_heap_decrease_key(fheap, nodes[2], -1);
+
+    cr_assert_eq(2, fheap->root_list->count);
+    cr_assert_eq(-1, fib_heap_peek(fheap));
+}

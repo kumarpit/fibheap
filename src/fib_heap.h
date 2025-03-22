@@ -33,14 +33,14 @@ typedef struct {
 
 fib_heap *fib_heap_create();
 
-void fib_heap_insert(fib_heap *, int);
+ntree_node *fib_heap_insert(fib_heap *, int);
 int fib_heap_peek(fib_heap *);
 int fib_heap_pop(fib_heap *);
 
 void fib_heap_merge(fib_heap *self, fib_heap *other);
-
-// TODO:
-/*void fib_heap_decrease_key(...);*/
+void fib_heap_decrease_key(fib_heap *fheap, ntree_node *, int);
 void fib_heap_dump(fib_heap *);
+
+/*bool fib_heap_is_empty(fib_heap *);*/
 
 #endif

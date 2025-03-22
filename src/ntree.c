@@ -59,3 +59,31 @@ void ntree_insert_child(ntree_node *node, ntree_node *parent) {
         ntree_insert_sibling(node, parent->child);
     }
 }
+
+void ntree_remove_child(ntree_node *node, bool should_destroy_node) {
+    assert(node != NULL);
+    assert(node->parent != NULL);
+
+    ntree_node *parent = node->parent;
+    if (node == parent->child) {
+        parent->child = node->sibling;
+    } else {
+        ntree_node *prev = parent->child;
+        ntree_node *current = parent->child;
+        while (current->sibling) {
+            if (current->sibling == node) {
+                prev->sibling = node->sibling;
+                break;
+            }
+            prev = current;
+            current = current->sibling;
+        }
+    }
+
+    node->parent = NULL;
+    node->sibling = NULL;
+
+    if (should_destroy_node) {
+        free(node);
+    }
+}

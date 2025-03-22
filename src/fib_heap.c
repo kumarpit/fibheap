@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <limits.h>
+#include <stdbool.h>
 #include <stdlib.h>
 
 #include "darray.h"
@@ -10,6 +11,7 @@
 
 // Forward declarations (private methods)
 void __compact(fib_heap *);
+void __cut(fib_heap *, ntree_node *);
 ntree_node *__get_min_node(fib_heap *);
 ntree_node *__get_node(fib_heap *, size_t index);
 void __dump_node(ntree_node *, int index, int level);
@@ -35,13 +37,15 @@ fib_heap *fib_heap_create() {
 /**
  * @brief Inserts an element into the heap
  */
-void fib_heap_insert(fib_heap *fheap, int n) {
+ntree_node *fib_heap_insert(fib_heap *fheap, int n) {
     ntree_node *new_node = ntree_create_node(n);
     da_append(fheap->root_list, new_node);
 
     if (fheap->min_index == -1 || n <= fib_heap_peek(fheap)) {
         fheap->min_index = fheap->root_list->count - 1;
     }
+
+    return new_node;
 }
 
 /**
@@ -104,6 +108,31 @@ void fib_heap_merge(fib_heap *self, fib_heap *other) {
             if (current->data == other_min) {
                 self->min_index = _i;
                 break;
+            }
+        }
+    }
+}
+
+void fib_heap_decrease_key(fib_heap *fheap, ntree_node *node, int new_key) {
+    assert(node != NULL);
+    assert(new_key < node->data);
+
+    node->data = new_key;
+
+    if (node->parent != NULL) {
+        if (new_key < node->parent->data) {
+            __cut(fheap, node);
+        }
+    }
+
+    if (!(da_is_empty(fheap->root_list))) {
+        if (new_key < fib_heap_peek(fheap)) {
+            ntree_node *current;
+            da_for_each(fheap->root_list, current) {
+                if (current->data == new_key) {
+                    fheap->min_index = _i;
+                    break;
+                }
             }
         }
     }
@@ -187,6 +216,25 @@ void __compact(fib_heap *fheap) {
     fheap->min_index = min_index;
     debug_printf("heap after compaction:");
     fib_heap_dump(fheap);
+}
+
+void __cut(fib_heap *fheap, ntree_node *node) {
+    assert(fheap != NULL);
+    assert(node != NULL);
+
+    if (node->parent == NULL) return;
+
+    ntree_node *parent = node->parent;
+    node->marked = false;
+
+    ntree_remove_child(node, false);
+    da_append(fheap->root_list, node);
+
+    if (!(parent->marked)) {
+        parent->marked = true;
+    } else {
+        __cut(fheap, parent);
+    }
 }
 
 /**
