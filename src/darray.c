@@ -23,15 +23,10 @@ void *da_get(darray *da, size_t index) {
     assert(da != NULL);
     assert(da->items != NULL);
 
-    debug_printf("getting array element at index: %zu", index);
-
     if (index >= da->count) {
-        debug_printf("[ERROR] index %zu out of bounds (size: %zu)", index,
-                     da->count);
+        debug_error("index %zu out of bounds (size: %zu)", index, da->count);
         exit(1);
     }
-
-    debug_printf("size of void*: %lu", sizeof(void *));
 
     return (void *)da->items[index];
 }
@@ -47,8 +42,11 @@ void da_set(darray *da, void *data, size_t index) {
  */
 void da_destroy(darray *da, bool should_destroy_items) {
     if (should_destroy_items) {
-        // TODO: would need to store a function pointer to a custom free
-        // function
+        for (size_t i = 0; i < da->count; ++i) {
+            if (da->items[i] == NULL) continue;
+            // TODO: possibly pass in a custom free function
+            free(da->items[i]);
+        }
     }
     free(da);
 }

@@ -5,18 +5,17 @@
 #include <stdlib.h>
 
 #include "darray.h"
-#include "debug.h"
 #include "ntree.h"
 
 // Forward declarations (internal methods)
 void __compact(fib_heap *);
 ntree_node *__get_min_node(fib_heap *);
+ntree_node *__get_node(fib_heap *, size_t index);
 
 /**
  * @brief Initializes a new fibonacci heap
  */
 fib_heap *fib_heap_create() {
-    debug_printf("size of ntree_node* : %lu", sizeof(ntree_node *));
     fib_heap *new_heap = malloc(sizeof(fib_heap));
     assert(new_heap != NULL);
     new_heap->min_index = -1;
@@ -32,14 +31,9 @@ void fib_heap_insert(fib_heap *fheap, int n) {
     ntree_node *new_node = ntree_create_node(n);
     da_append(fheap->root_list, new_node);
 
-    debug_printf("fheap->min_index = %d", fheap->min_index);
-
     if (fheap->min_index == -1 || n <= fib_heap_peek(fheap)) {
-        debug_printf("setting new min!");
         fheap->min_index = fheap->root_list->count - 1;
     }
-
-    debug_printf("fheap->min_index = %d", fheap->min_index);
 }
 
 /**
@@ -117,8 +111,7 @@ void __compact(fib_heap *fheap) {
 
         int current_key = current->data;
         if (new_min_index == -1 ||
-            current_key <
-                ((ntree_node *)da_get(fheap->root_list, new_min_index))->data) {
+            current_key < __get_node(fheap, new_min_index)->data) {
             new_min_index = _i;
         }
     }
@@ -135,6 +128,9 @@ void __compact(fib_heap *fheap) {
 
 ntree_node *__get_min_node(fib_heap *fheap) {
     assert(fheap->min_index > -1);
-    debug_printf("getting minimum node at index %d", fheap->min_index);
-    return da_get(fheap->root_list, fheap->min_index);
+    return __get_node(fheap, fheap->min_index);
+}
+
+ntree_node *__get_node(fib_heap *fheap, size_t index) {
+    return (ntree_node *)da_get(fheap->root_list, index);
 }
