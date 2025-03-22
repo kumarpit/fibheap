@@ -58,3 +58,18 @@ Test(FibHeap, pop) {
     cr_assert_eq(3, fib_heap_pop(fheap));
     cr_assert_eq(0, fheap->root_list->count);
 }
+
+Test(FibHeap, pop_stress_test) {
+    fib_heap *fheap = fib_heap_create();
+
+    for (int i = 10; i > 0; i--) {
+        fib_heap_insert(fheap, i);
+    }
+
+    fib_heap_dump(fheap);
+
+    for (int i = 1; i <= 10; i++) {
+        cr_assert_eq(i, fib_heap_pop(fheap));
+        fib_heap_dump(fheap);
+    }
+}

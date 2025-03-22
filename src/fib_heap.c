@@ -92,6 +92,21 @@ int fib_heap_pop(fib_heap *fheap) {
     return min_key;
 }
 
+/**
+ * @brief Pretty-prints the state of the heap, useful for debugging relatively
+ * small-sized heaps
+ */
+void fib_heap_dump(fib_heap *fheap) {
+    ntree_node *current;
+    debug_printf("-------------Dumping Heap----------------");
+    debug_printf("Min Index: %d", fheap->min_index);
+    da_for_each(fheap->root_list, current) {
+        debug_printf("[%zu] Root: %d Children: %d", _i, current->data,
+                     current->degree);
+    }
+    debug_printf("----------------------------------------\n");
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // Private method definitions
