@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 #include "darray.h"
+#include "debug.h"
 #include "ntree.h"
 
 // Forward declarations (internal methods)
@@ -113,21 +114,30 @@ void __compact(fib_heap *fheap) {
         if (new_min_index == -1 ||
             current_key < __get_node(fheap, new_min_index)->data) {
             new_min_index = _i;
+            debug_printf("new_min_index value: %d", new_min_index);
         }
     }
 
-    fheap->min_index = new_min_index;
     da_destroy(fheap->root_list, false);
     fheap->root_list = da_create();
 
     for (int i = 0; i < FIB_HEAP_MAX_DEGREE + 1; i++) {
-        if (degrees_list[i] == NULL) continue;
+        if (degrees_list[i] == NULL) {
+            if (i < new_min_index) {
+                new_min_index--;  // need to account for the fewer elements we
+                                  // are adding to the new root list
+            }
+            continue;
+        }
         da_append(fheap->root_list, degrees_list[i]);
     }
+
+    fheap->min_index = new_min_index;
 }
 
 ntree_node *__get_min_node(fib_heap *fheap) {
     assert(fheap->min_index > -1);
+    debug_printf("min_index value: %d", fheap->min_index);
     return __get_node(fheap, fheap->min_index);
 }
 
