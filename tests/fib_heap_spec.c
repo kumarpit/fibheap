@@ -1,6 +1,5 @@
 #include <criterion/criterion.h>
 
-#include "../src/debug.h"
 #include "../src/fib_heap.h"
 
 Test(FibHeap, create) {
@@ -68,7 +67,6 @@ Test(FibHeap, pop_stress_test) {
     }
 
     for (int i = 1; i <= 10000; i++) {
-        // cr_assert_eq(i, fib_heap_pop(fheap));
-        debug_printf("result: %d", fib_heap_pop(fheap));
+        cr_assert_eq(i, fib_heap_pop(fheap));
     }
 }
