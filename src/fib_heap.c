@@ -14,6 +14,7 @@ void __compact(fib_heap *);
 void __cut(fib_heap *, ntree_node *);
 ntree_node *__get_min_node(fib_heap *);
 ntree_node *__get_node(fib_heap *, size_t index);
+bool __is_less_than(fib_heap *, void *a, void *b);
 void __dump_node(ntree_node *, int index, int level);
 void __free_node(void *);
 
@@ -26,11 +27,12 @@ void __free_node(void *);
 /**
  * @brief Initializes a new fibonacci heap
  */
-fib_heap *fib_heap_create() {
+fib_heap *fib_heap_create(cmp_func __comparator) {
     fib_heap *new_heap = malloc(sizeof(fib_heap));
     assert(new_heap != NULL);
     new_heap->min_index = -1;
     new_heap->root_list = da_create(__free_node);
+    new_heap->__comparator = __comparator;
 
     return new_heap;
 }
@@ -45,11 +47,12 @@ bool fib_heap_is_empty(fib_heap *fheap) {
 /**
  * @brief Inserts an element into the heap
  */
-ntree_node *fib_heap_push(fib_heap *fheap, int n) {
-    ntree_node *new_node = ntree_create_node(n);
+ntree_node *fib_heap_push(fib_heap *fheap, void *data) {
+    ntree_node *new_node = ntree_create_node(data);
     da_append(fheap->root_list, new_node);
 
-    if (fheap->min_index == -1 || n <= fib_heap_peek(fheap)) {
+    if (fheap->min_index == -1 ||
+        __is_less_than(fheap, data, fib_heap_peek(fheap))) {
         fheap->min_index = fheap->root_list->count - 1;
     }
 
@@ -60,14 +63,14 @@ ntree_node *fib_heap_push(fib_heap *fheap, int n) {
  * @brief Returns the current minimum element from the heap (but does not remove
  * it)
  */
-int fib_heap_peek(fib_heap *fheap) { return __get_min_node(fheap)->data; }
+void *fib_heap_peek(fib_heap *fheap) { return __get_min_node(fheap)->data; }
 
 /**
  * @brief Returns the current minimum element from the heap and removes it
  */
-int fib_heap_pop(fib_heap *fheap) {
+void *fib_heap_pop(fib_heap *fheap) {
     assert(fheap->min_index != -1);
-    int min_key = fib_heap_peek(fheap);
+    void *min_key = fib_heap_peek(fheap);
 
     debug_printf("starting pop");
     debug_printf("heap state:");
@@ -106,10 +109,10 @@ void fib_heap_merge(fib_heap *self, fib_heap *other) {
 
     da_for_each(other->root_list) { da_append(self->root_list, _current); }
 
-    int self_min = fib_heap_peek(self);
-    int other_min = fib_heap_peek(other);
+    void *self_min = fib_heap_peek(self);
+    void *other_min = fib_heap_peek(other);
 
-    if (other_min < self_min) {
+    if (__is_less_than(self, other_min, self_min)) {
         da_for_each(self->root_list) {
             if (((ntree_node *)_current)->data == other_min) {
                 self->min_index = _i;
@@ -123,14 +126,14 @@ void fib_heap_merge(fib_heap *self, fib_heap *other) {
  * @brief Decrease the value of the given node to the `new_key` value and
  * re-organize heap to maintain heap invariant
  */
-void fib_heap_decrease_key(fib_heap *fheap, ntree_node *node, int new_key) {
+void fib_heap_decrease_key(fib_heap *fheap, ntree_node *node, void *new_key) {
     assert(node != NULL);
     assert(new_key < node->data);
 
     node->data = new_key;
 
     if (node->parent != NULL) {
-        if (new_key < node->parent->data) {
+        if (__is_less_than(fheap, new_key, node->parent->data)) {
             __cut(fheap, node);
         }
     }
@@ -172,7 +175,7 @@ void fib_heap_dump(fib_heap *fheap) {
  */
 void __compact(fib_heap *fheap) {
     ntree_node *degrees_list[FIB_HEAP_MAX_DEGREE + 1] = {NULL};
-    int min_key = INT_MAX;
+    void *min_key = NULL;
 
     ntree_node *current;
     da_for_each(fheap->root_list) {
@@ -183,9 +186,9 @@ void __compact(fib_heap *fheap) {
         // one tree per degree
         ntree_node *existing = degrees_list[degree];
         while (existing != NULL) {
-            int current_key = current->data;
-            int exisiting_key = existing->data;
-            if (exisiting_key < current_key) {
+            void *current_key = current->data;
+            void *exisiting_key = existing->data;
+            if (__is_less_than(fheap, exisiting_key, current_key)) {
                 ntree_insert_child(current, existing);
                 current = existing;
             } else {
@@ -199,8 +202,8 @@ void __compact(fib_heap *fheap) {
 
         degrees_list[degree] = current;
 
-        int current_key = current->data;
-        if (current_key < min_key) {
+        void *current_key = current->data;
+        if (min_key == NULL || __is_less_than(fheap, current_key, min_key)) {
             min_key = current_key;
         }
     }
@@ -271,8 +274,9 @@ ntree_node *__get_node(fib_heap *fheap, size_t index) {
  * @brief Pretty-print helper to dump fibonacci heap state
  */
 void __dump_node(ntree_node *node, int index, int level) {
+    // TODO: use a custom print function here as well
     debug_printf_with_indent(level, "[%d] Root: %d Children: %d", index,
-                             node->data, node->degree);
+                             *((int *)node->data), node->degree);
     if (node->child != NULL) {
         __dump_node(node->child, index, level + 1);
     }
@@ -282,3 +286,10 @@ void __dump_node(ntree_node *node, int index, int level) {
  * @brief Destructor for nodes in the root list
  */
 void __free_node(void *node) { free((ntree_node *)node); }
+
+/**
+ * @brief Returns true if a is less than b (where a, b are fib heap elements)
+ */
+bool __is_less_than(fib_heap *fheap, void *a, void *b) {
+    return fheap->__comparator(a, b) < 0;
+}

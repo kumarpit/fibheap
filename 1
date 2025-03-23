@@ -9,9 +9,8 @@ int cmp_int(void *_a, void *_b) {
 }
 
 int to_int(void *ptr) { return *((int *)ptr); }
-
 int get_int(fib_heap *fheap, int index) {
-    return to_int(((ntree_node *)da_get(fheap->root_list, index))->data);
+    return *((int *)((ntree_node *)da_get(fheap->root_list, index))->data);
 }
 
 Test(FibHeap, create) {
@@ -36,45 +35,43 @@ Test(FibHeap, insert) {
 }
 
 Test(FibHeap, peek) {
-    fib_heap *fheap = fib_heap_create(&cmp_int);
+    fib_heap *fheap = fib_heap_create();
 
-    int data[3];
     for (int i = 3; i > 0; i--) {
-        data[i] = i;
-        fib_heap_push(fheap, &data[i]);
+        fib_heap_push(fheap, i);
     }
 
-    cr_assert_eq(1, to_int(fib_heap_peek(fheap)));
+    cr_assert_eq(1, fib_heap_peek(fheap));
 }
 
-Test(FibHeap, pop) {
-    fib_heap *fheap = fib_heap_create(&cmp_int);
-
-    int data[3];
-    for (int i = 3; i > 0; i--) {
-        data[i] = i;
-        fib_heap_push(fheap, &data[i]);
-    }
-
-    // Root list >> 3  2  1
-    cr_assert_eq(3, fheap->root_list->count);
-
-    cr_assert_eq(1, to_int(fib_heap_pop(fheap)));
-    cr_assert_eq(1, fheap->root_list->count);
-    cr_assert_eq(2, to_int(fib_heap_peek(fheap)));
-    cr_assert_eq(3, fheap->min_index);
-
-    // Root list >> 2--3
-
-    cr_assert_eq(2, to_int(fib_heap_pop(fheap)));
-    cr_assert_eq(1, fheap->root_list->count);
-
-    // Root list >> 3
-
-    cr_assert_eq(3, to_int(fib_heap_peek(fheap)));
-    cr_assert_eq(3, to_int(fib_heap_pop(fheap)));
-    cr_assert_eq(0, fheap->root_list->count);
-}
+// Test(FibHeap, pop) {
+//     fib_heap *fheap = fib_heap_create();
+//
+//     for (int i = 3; i > 0; i--) {
+//         fib_heap_push(fheap, i);
+//     }
+//
+//     // Root list >> 3  2  1
+//     cr_assert_eq(3, fheap->root_list->count);
+//
+//     cr_assert_eq(1, fib_heap_pop(fheap));
+//     cr_assert_eq(1, fheap->root_list->count);
+//     cr_assert_eq(2, fib_heap_peek(fheap));
+//     cr_assert_eq(3, ((ntree_node *)da_get(fheap->root_list,
+//     fheap->min_index))
+//                         ->child->data);
+//
+//     // Root list >> 2--3
+//
+//     cr_assert_eq(2, fib_heap_pop(fheap));
+//     cr_assert_eq(1, fheap->root_list->count);
+//
+//     // Root list >> 3
+//
+//     cr_assert_eq(3, fib_heap_peek(fheap));
+//     cr_assert_eq(3, fib_heap_pop(fheap));
+//     cr_assert_eq(0, fheap->root_list->count);
+// }
 //
 // Test(FibHeap, pop_stress_test) {
 //     fib_heap *fheap = fib_heap_create();

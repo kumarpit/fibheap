@@ -16,7 +16,7 @@
  * child. ntree nodes support storing ints.
  */
 typedef struct ntree_node {
-    int data;
+    void *data;
     int degree;  // in other words, the number of children
     bool marked;
     struct ntree_node *parent;
@@ -24,7 +24,7 @@ typedef struct ntree_node {
     struct ntree_node *sibling;
 } ntree_node;
 
-ntree_node *ntree_create_node(int);
+ntree_node *ntree_create_node(void *);
 void ntree_insert_sibling(ntree_node *node, ntree_node *elder);
 void ntree_insert_child(ntree_node *node, ntree_node *parent);
 
