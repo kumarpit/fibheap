@@ -15,6 +15,7 @@ void __cut(fib_heap *, ntree_node *);
 ntree_node *__get_min_node(fib_heap *);
 ntree_node *__get_node(fib_heap *, size_t index);
 void __dump_node(ntree_node *, int index, int level);
+void __free_node(void *);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -29,7 +30,7 @@ fib_heap *fib_heap_create() {
     fib_heap *new_heap = malloc(sizeof(fib_heap));
     assert(new_heap != NULL);
     new_heap->min_index = -1;
-    new_heap->root_list = da_create();
+    new_heap->root_list = da_create(__free_node);
 
     return new_heap;
 }
@@ -84,7 +85,7 @@ int fib_heap_pop(fib_heap *fheap) {
     debug_printf("heap state after appending children");
     fib_heap_dump(fheap);
 
-    da_remove(fheap->root_list, fheap->min_index);
+    da_remove(fheap->root_list, fheap->min_index, true);
 
     if (!fib_heap_is_empty(fheap)) {
         __compact(fheap);
@@ -206,7 +207,7 @@ void __compact(fib_heap *fheap) {
     }
 
     da_destroy(fheap->root_list, false);
-    fheap->root_list = da_create();
+    fheap->root_list = da_create(__free_node);
 
     // Only add back non-null elements to the new root list. This makes up for
     // the drawbacks of my dyanmic array implementation (which leaves gaps in
@@ -277,3 +278,8 @@ void __dump_node(ntree_node *node, int index, int level) {
         __dump_node(node->child, index, level + 1);
     }
 }
+
+/**
+ * @brief Destructor for nodes in the root list
+ */
+void __free_node(void *node) { free((ntree_node *)node); }

@@ -3,7 +3,7 @@
 #include "../src/darray.h"
 
 Test(DynamicArray, create) {
-    darray *new_arr = da_create();
+    darray *new_arr = da_create(NULL);
 
     cr_assert_eq(NULL, new_arr->items);
     cr_assert_eq(0, new_arr->count);
@@ -11,7 +11,7 @@ Test(DynamicArray, create) {
 }
 
 Test(DynamicArray, append) {
-    darray *arr = da_create();
+    darray *arr = da_create(NULL);
 
     int values[3];
     int *ptrs[3];
@@ -31,7 +31,7 @@ Test(DynamicArray, append) {
 }
 
 Test(DynamicArray, for_each) {
-    darray *arr = da_create();
+    darray *arr = da_create(NULL);
 
     int values[3];
     int *ptrs[3];

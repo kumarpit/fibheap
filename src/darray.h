@@ -36,15 +36,19 @@
         if (!((item) = (list)->items[_i]))                               \
             continue;                                                    \
         else
+
+typedef void (*free_func)(void *);
+
 typedef struct {
     void **items;
     size_t count;
     size_t capacity;
+    free_func __free;
 } darray;
 
-darray *da_create();
+darray *da_create(free_func destructor);
 void *da_get(darray *, size_t);
-void da_remove(darray *, size_t);
+void da_remove(darray *, size_t, bool should_destroy_item);
 void da_set(darray *, void *, size_t);
 void da_destroy(darray *, bool should_destroy_items);
 
