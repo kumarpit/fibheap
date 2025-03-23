@@ -3,8 +3,9 @@
  * \brief
  */
 
-#include "darray.h"
-#include "fib_heap.h"
+#include "src/darray.h"
+#include "src/debug.h"
+#include "src/fib_heap.h"
 #include "src/utils.h"
 
 typedef struct {
@@ -15,7 +16,8 @@ typedef struct {
 int cmp_pair(void *_a, void *_b) {
     pair *a = (pair *)_a;
     pair *b = (pair *)_b;
-    return cmp_int(&(a->second), &(b->second));
+    return -cmp_int(&(a->second),
+                    &(b->second));  // NOTE: -ve to make this a max heap
 }
 
 darray *top_k_frequent(darray *count_map, int k) {
@@ -35,4 +37,20 @@ darray *top_k_frequent(darray *count_map, int k) {
     return res;
 }
 
-int main() { return 0; }
+int main() {
+    pair pairs[5];
+    for (int i = 1; i <= 5; i++) {
+        pairs[i - 1] = (pair){i, 6 - i};
+    }
+
+    darray *count_map = da_create(NULL);
+    for (int i = 0; i < 5; i++) {
+        da_append(count_map, &pairs[i]);
+    }
+
+    darray *res = top_k_frequent(count_map, 3);
+    da_for_each(res) {
+        debug_printf("Key: %d Value: %d", ((pair *)_current)->first,
+                     ((pair *)_current)->second);
+    }
+}

@@ -7,18 +7,11 @@ OBJ=obj
 SRCS=$(wildcard $(SRC)/*.c)
 OBJS=$(patsubst $(SRC)/%.c, $(OBJ)/%.o, $(SRCS))
 CFLAGS=-Wall -Wextra $(INCDIRS) $(LIBDIRS) $(OPT)
-
-BINARY=bin
-
+EXAMPLE=example
 TEST=tests
 TESTS=$(wildcard $(TEST)/*.c)
 TESTBINS=$(patsubst $(TEST)/%.c, $(TEST)/bin/%, $(TESTS))
 TEST_OBJS=$(filter-out $(OBJ)/main.o, $(OBJS))
-
-all: $(BINARY)
-
-$(BINARY): $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -o $(BINARY)
 
 $(OBJS): | $(OBJ)
 
@@ -40,7 +33,10 @@ $(TEST)/bin/%: $(TEST)/%.c $(TEST_OBJS) | $(TEST)/bin
 test: $(TESTBINS)
 	for test in $(TESTBINS) ; do ./$$test ; done
 
+example: example.c $(OBJS)
+	$(CC) $(CFLAGS) example.c $(OBJS) -o $(EXAMPLE)
+
 clean:
 	rm -r obj
-	rm -rf $(BINARY)
+	rm -rf $(EXAMPLE)
 	rm -r tests/bin
