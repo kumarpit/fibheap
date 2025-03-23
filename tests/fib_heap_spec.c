@@ -14,6 +14,10 @@ int get_int(fib_heap *fheap, int index) {
     return to_int(((ntree_node *)da_get(fheap->root_list, index))->data);
 }
 
+int get_child_int(fib_heap *fheap, int index) {
+    return to_int(((ntree_node *)da_get(fheap->root_list, index))->child->data);
+}
+
 Test(FibHeap, create) {
     fib_heap *fheap = fib_heap_create(&cmp_int);
 
@@ -62,7 +66,7 @@ Test(FibHeap, pop) {
     cr_assert_eq(1, to_int(fib_heap_pop(fheap)));
     cr_assert_eq(1, fheap->root_list->count);
     cr_assert_eq(2, to_int(fib_heap_peek(fheap)));
-    cr_assert_eq(3, fheap->min_index);
+    cr_assert_eq(3, get_child_int(fheap, fheap->min_index));
 
     // Root list >> 2--3
 
@@ -75,19 +79,21 @@ Test(FibHeap, pop) {
     cr_assert_eq(3, to_int(fib_heap_pop(fheap)));
     cr_assert_eq(0, fheap->root_list->count);
 }
-//
-// Test(FibHeap, pop_stress_test) {
-//     fib_heap *fheap = fib_heap_create();
-//
-//     for (int i = 10000; i > 0; i--) {
-//         fib_heap_push(fheap, i);
-//     }
-//
-//     for (int i = 1; i <= 10000; i++) {
-//         cr_assert_eq(i, fib_heap_pop(fheap));
-//     }
-// }
-//
+
+Test(FibHeap, pop_stress_test) {
+    fib_heap *fheap = fib_heap_create(&cmp_int);
+
+    int data[10000];
+    for (int i = 10000; i > 0; i--) {
+        data[i] = i;
+        fib_heap_push(fheap, &data[i]);
+    }
+
+    for (int i = 1; i <= 10000; i++) {
+        cr_assert_eq(i, to_int(fib_heap_pop(fheap)));
+    }
+}
+
 // Test(FibHeap, merge) {
 //     fib_heap *fheap1 = fib_heap_create();
 //     for (int i = 0; i < 3; i++) {
