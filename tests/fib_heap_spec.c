@@ -94,34 +94,42 @@ Test(FibHeap, pop_stress_test) {
     }
 }
 
-// Test(FibHeap, merge) {
-//     fib_heap *fheap1 = fib_heap_create();
-//     for (int i = 0; i < 3; i++) {
-//         fib_heap_push(fheap1, i);
-//     }
-//
-//     fib_heap *fheap2 = fib_heap_create();
-//     for (int i = 3; i < 6; i++) {
-//         fib_heap_push(fheap2, i);
-//     }
-//
-//     fib_heap_merge(fheap2, fheap1);
-//
-//     cr_assert_eq(6, fheap2->root_list->count);
-//     cr_assert_eq(0, fib_heap_peek(fheap2));
-// }
-//
-// Test(FibHeap, decrease_key) {
-//     fib_heap *fheap = fib_heap_create();
-//
-//     ntree_node *nodes[3];
-//     for (int i = -1; i < 2; i++) {
-//         nodes[i + 1] = fib_heap_push(fheap, i * 2);
-//     }
-//
-//     fib_heap_pop(fheap);
-//     fib_heap_decrease_key(fheap, nodes[2], -1);
-//
-//     cr_assert_eq(2, fheap->root_list->count);
-//     cr_assert_eq(-1, fib_heap_peek(fheap));
-// }
+Test(FibHeap, merge) {
+    fib_heap *fheap1 = fib_heap_create(&cmp_int);
+    int data1[3];
+    for (int i = 0; i < 3; i++) {
+        data1[i] = i;
+        fib_heap_push(fheap1, &data1[i]);
+    }
+
+    fib_heap *fheap2 = fib_heap_create(&cmp_int);
+    int data2[3];
+    for (int i = 3; i < 6; i++) {
+        data2[i - 3] = i;
+        fib_heap_push(fheap2, &data2[i - 3]);
+    }
+
+    fib_heap_merge(fheap2, fheap1);
+
+    cr_assert_eq(6, fheap2->root_list->count);
+    cr_assert_eq(0, to_int(fib_heap_peek(fheap2)));
+}
+
+Test(FibHeap, decrease_key) {
+    fib_heap *fheap = fib_heap_create(&cmp_int);
+
+    ntree_node *nodes[3];
+    int data[3];
+    for (int i = -1; i < 2; i++) {
+        data[i + 1] = i * 2;
+        nodes[i + 1] = fib_heap_push(fheap, &data[i + 1]);
+    }
+
+    fib_heap_pop(fheap);
+
+    int new_key = -1;
+    fib_heap_decrease_key(fheap, nodes[2], &new_key);
+
+    cr_assert_eq(2, fheap->root_list->count);
+    cr_assert_eq(-1, to_int(fib_heap_peek(fheap)));
+}

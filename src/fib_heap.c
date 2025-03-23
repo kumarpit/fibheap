@@ -15,6 +15,7 @@ void __cut(fib_heap *, ntree_node *);
 ntree_node *__get_min_node(fib_heap *);
 ntree_node *__get_node(fib_heap *, size_t index);
 bool __is_less_than(fib_heap *, void *a, void *b);
+bool __is_equal_to(fib_heap *, void *a, void *b);
 void __dump_node(ntree_node *, int index, int level);
 void __free_node(void *);
 
@@ -107,6 +108,12 @@ void fib_heap_merge(fib_heap *self, fib_heap *other) {
     assert(self != NULL);
     assert(other != NULL);
 
+    debug_printf("heap state before merge: ");
+    fib_heap_dump(self);
+
+    debug_printf("the other heap: ");
+    fib_heap_dump(other);
+
     da_for_each(other->root_list) { da_append(self->root_list, _current); }
 
     void *self_min = fib_heap_peek(self);
@@ -114,12 +121,16 @@ void fib_heap_merge(fib_heap *self, fib_heap *other) {
 
     if (__is_less_than(self, other_min, self_min)) {
         da_for_each(self->root_list) {
-            if (((ntree_node *)_current)->data == other_min) {
+            if (__is_equal_to(self, ((ntree_node *)_current)->data,
+                              other_min)) {
                 self->min_index = _i;
                 break;
             }
         }
     }
+
+    debug_printf("heap state after merge:");
+    fib_heap_dump(self);
 }
 
 /**
@@ -139,9 +150,10 @@ void fib_heap_decrease_key(fib_heap *fheap, ntree_node *node, void *new_key) {
     }
 
     if (!fib_heap_is_empty(fheap)) {
-        if (new_key < fib_heap_peek(fheap)) {
+        if (__is_less_than(fheap, new_key, fib_heap_peek(fheap))) {
             da_for_each(fheap->root_list) {
-                if (((ntree_node *)_current)->data == new_key) {
+                if (__is_equal_to(fheap, ((ntree_node *)_current)->data,
+                                  new_key)) {
                     fheap->min_index = _i;
                     break;
                 }
@@ -292,4 +304,11 @@ void __free_node(void *node) { free((ntree_node *)node); }
  */
 bool __is_less_than(fib_heap *fheap, void *a, void *b) {
     return fheap->__comparator(a, b) < 0;
+}
+
+/**
+ * @brief Returns true if a equal to b (where a, b are fib heap elements)
+ */
+bool __is_equal_to(fib_heap *fheap, void *a, void *b) {
+    return fheap->__comparator(a, b) == 0;
 }
