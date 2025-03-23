@@ -44,7 +44,7 @@ Test(FibHeap, create) {
     fib_heap *fheap = fib_heap_create(&cmp_int);
 
     cr_assert_eq(-1, fheap->min_index);
-    cr_assert_eq(0, fheap->root_list->count);
+    cr_assert_eq(0, fib_heap_size(fheap));
     cr_assert_eq(&cmp_int, fheap->__comparator);
 }
 
@@ -58,7 +58,7 @@ Test(FibHeap, insert) {
     }
 
     cr_assert_eq(1, get_index_to_int(fheap, fheap->min_index));
-    cr_assert_eq(3, fheap->root_list->count);
+    cr_assert_eq(3, fib_heap_size(fheap));
 }
 
 Test(FibHeap, peek) {
@@ -83,21 +83,21 @@ Test(FibHeap, pop) {
     }
 
     // Root list: 3  2  1
-    cr_assert_eq(3, fheap->root_list->count);
+    cr_assert_eq(3, fib_heap_size(fheap));
 
     cr_assert_eq(1, to_int(fib_heap_pop(fheap)));
-    cr_assert_eq(1, fheap->root_list->count);
+    cr_assert_eq(1, fib_heap_size(fheap));
     cr_assert_eq(2, to_int(fib_heap_peek(fheap)));
     cr_assert_eq(3, get_child_at_index_to_int(fheap, fheap->min_index));
 
     // Root list: 2-3
     cr_assert_eq(2, to_int(fib_heap_pop(fheap)));
-    cr_assert_eq(1, fheap->root_list->count);
+    cr_assert_eq(1, fib_heap_size(fheap));
 
     // Root list: 3
     cr_assert_eq(3, to_int(fib_heap_peek(fheap)));
     cr_assert_eq(3, to_int(fib_heap_pop(fheap)));
-    cr_assert_eq(0, fheap->root_list->count);
+    cr_assert_eq(0, fib_heap_size(fheap));
 }
 
 Test(FibHeap, pop_stress_test) {
@@ -131,7 +131,7 @@ Test(FibHeap, merge) {
 
     fib_heap_merge(fheap2, fheap1);
 
-    cr_assert_eq(6, fheap2->root_list->count);
+    cr_assert_eq(6, fib_heap_size(fheap2));
     cr_assert_eq(0, to_int(fib_heap_peek(fheap2)));
 }
 
@@ -150,6 +150,6 @@ Test(FibHeap, decrease_key) {
     int new_key = -1;
     fib_heap_decrease_key(fheap, nodes[2], &new_key);
 
-    cr_assert_eq(2, fheap->root_list->count);
+    cr_assert_eq(2, fib_heap_size(fheap));
     cr_assert_eq(-1, to_int(fib_heap_peek(fheap)));
 }

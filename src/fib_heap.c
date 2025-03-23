@@ -46,6 +46,11 @@ bool fib_heap_is_empty(fib_heap *fheap) {
 }
 
 /**
+ * @brief Returns the number of elements in the heap
+ */
+int fib_heap_size(fib_heap *fheap) { return fheap->root_list->count; }
+
+/**
  * @brief Inserts an element into the heap
  */
 ntree_node *fib_heap_push(fib_heap *fheap, void *data) {

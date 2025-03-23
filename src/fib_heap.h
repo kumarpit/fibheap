@@ -41,7 +41,8 @@ typedef struct {
 } fib_heap;
 
 fib_heap *fib_heap_create(cmp_func);
-bool fib_heap_is_empty(fib_heap *fheap);
+bool fib_heap_is_empty(fib_heap *);
+int fib_heap_size(fib_heap *);
 
 ntree_node *fib_heap_push(fib_heap *, void *);
 void *fib_heap_peek(fib_heap *);
