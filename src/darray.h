@@ -30,11 +30,12 @@
 /**
  * Loops through every _NON-NULL_ value in the array
  */
-#define da_for_each(list, item)                                          \
-    for (size_t _i = 0;                                                  \
-         _i < (list)->capacity && ((item) = (list)->items[_i], 1); _i++) \
-        if (!((item) = (list)->items[_i]))                               \
-            continue;                                                    \
+#define da_for_each(list)                                                    \
+    void *_current;                                                          \
+    for (size_t _i = 0;                                                      \
+         _i < (list)->capacity && ((_current) = (list)->items[_i], 1); _i++) \
+        if (_current == NULL)                                                \
+            continue;                                                        \
         else
 
 typedef void (*free_func)(void *);

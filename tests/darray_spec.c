@@ -45,6 +45,5 @@ Test(DynamicArray, for_each) {
         da_append(arr, ptrs[i]);
     }
 
-    int *i;
-    da_for_each(arr, i) { cr_assert_eq(values[_i], *i); }
+    da_for_each(arr) { cr_assert_eq(values[_i], *(int *)_current); }
 }

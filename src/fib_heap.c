@@ -104,16 +104,14 @@ void fib_heap_merge(fib_heap *self, fib_heap *other) {
     assert(self != NULL);
     assert(other != NULL);
 
-    ntree_node *node;
-    da_for_each(other->root_list, node) { da_append(self->root_list, node); }
+    da_for_each(other->root_list) { da_append(self->root_list, _current); }
 
     int self_min = fib_heap_peek(self);
     int other_min = fib_heap_peek(other);
 
     if (other_min < self_min) {
-        ntree_node *current;
-        da_for_each(self->root_list, current) {
-            if (current->data == other_min) {
+        da_for_each(self->root_list) {
+            if (((ntree_node *)_current)->data == other_min) {
                 self->min_index = _i;
                 break;
             }
@@ -139,9 +137,8 @@ void fib_heap_decrease_key(fib_heap *fheap, ntree_node *node, int new_key) {
 
     if (!fib_heap_is_empty(fheap)) {
         if (new_key < fib_heap_peek(fheap)) {
-            ntree_node *current;
-            da_for_each(fheap->root_list, current) {
-                if (current->data == new_key) {
+            da_for_each(fheap->root_list) {
+                if (((ntree_node *)_current)->data == new_key) {
                     fheap->min_index = _i;
                     break;
                 }
@@ -158,7 +155,9 @@ void fib_heap_dump(fib_heap *fheap) {
     ntree_node *current;
     debug_printf("-------------Dumping Heap----------------");
     debug_printf("Min Index: %d", fheap->min_index);
-    da_for_each(fheap->root_list, current) { __dump_node(current, _i, 0); }
+    da_for_each(fheap->root_list) {
+        __dump_node((ntree_node *)_current, _i, 0);
+    }
     debug_printf("-----------------------------------------");
 }
 
@@ -177,7 +176,8 @@ void __compact(fib_heap *fheap) {
     int min_key = INT_MAX;
 
     ntree_node *current;
-    da_for_each(fheap->root_list, current) {  // index is available as _i
+    da_for_each(fheap->root_list) {
+        current = (ntree_node *)_current;
         int degree = current->degree;
 
         // Keep merging trees of same degrees - we should end up with at most

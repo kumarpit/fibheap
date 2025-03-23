@@ -71,8 +71,7 @@ void da_remove(darray *da, size_t index, bool should_destroy_item) {
 void da_destroy(darray *da, bool should_destroy_items) {
     if (should_destroy_items) {
         assert(da->__free != NULL);
-        void *current;
-        da_for_each(da, current) { da->__free(current); };
+        da_for_each(da) { da->__free(_current); };
     }
     free(da);
 }
