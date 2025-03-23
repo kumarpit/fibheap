@@ -45,7 +45,7 @@ bool fib_heap_is_empty(fib_heap *fheap) {
 /**
  * @brief Inserts an element into the heap
  */
-ntree_node *fib_heap_insert(fib_heap *fheap, int n) {
+ntree_node *fib_heap_push(fib_heap *fheap, int n) {
     ntree_node *new_node = ntree_create_node(n);
     da_append(fheap->root_list, new_node);
 
@@ -152,7 +152,6 @@ void fib_heap_decrease_key(fib_heap *fheap, ntree_node *node, int new_key) {
  * small-sized heaps
  */
 void fib_heap_dump(fib_heap *fheap) {
-    ntree_node *current;
     debug_printf("-------------Dumping Heap----------------");
     debug_printf("Min Index: %d", fheap->min_index);
     da_for_each(fheap->root_list) {

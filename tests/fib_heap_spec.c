@@ -13,7 +13,7 @@ Test(FibHeap, insert) {
     fib_heap *fheap = fib_heap_create();
 
     for (int i = 3; i > 0; i--) {
-        fib_heap_insert(fheap, i);
+        fib_heap_push(fheap, i);
     }
 
     cr_assert_eq(
@@ -25,7 +25,7 @@ Test(FibHeap, peek) {
     fib_heap *fheap = fib_heap_create();
 
     for (int i = 3; i > 0; i--) {
-        fib_heap_insert(fheap, i);
+        fib_heap_push(fheap, i);
     }
 
     cr_assert_eq(1, fib_heap_peek(fheap));
@@ -35,7 +35,7 @@ Test(FibHeap, pop) {
     fib_heap *fheap = fib_heap_create();
 
     for (int i = 3; i > 0; i--) {
-        fib_heap_insert(fheap, i);
+        fib_heap_push(fheap, i);
     }
 
     // Root list >> 3  2  1
@@ -63,7 +63,7 @@ Test(FibHeap, pop_stress_test) {
     fib_heap *fheap = fib_heap_create();
 
     for (int i = 10000; i > 0; i--) {
-        fib_heap_insert(fheap, i);
+        fib_heap_push(fheap, i);
     }
 
     for (int i = 1; i <= 10000; i++) {
@@ -74,12 +74,12 @@ Test(FibHeap, pop_stress_test) {
 Test(FibHeap, merge) {
     fib_heap *fheap1 = fib_heap_create();
     for (int i = 0; i < 3; i++) {
-        fib_heap_insert(fheap1, i);
+        fib_heap_push(fheap1, i);
     }
 
     fib_heap *fheap2 = fib_heap_create();
     for (int i = 3; i < 6; i++) {
-        fib_heap_insert(fheap2, i);
+        fib_heap_push(fheap2, i);
     }
 
     fib_heap_merge(fheap2, fheap1);
@@ -93,7 +93,7 @@ Test(FibHeap, decrease_key) {
 
     ntree_node *nodes[3];
     for (int i = -1; i < 2; i++) {
-        nodes[i + 1] = fib_heap_insert(fheap, i * 2);
+        nodes[i + 1] = fib_heap_push(fheap, i * 2);
     }
 
     fib_heap_pop(fheap);
