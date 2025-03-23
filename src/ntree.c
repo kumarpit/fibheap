@@ -8,7 +8,8 @@
 /**
  * @brief Constructs a new ntree_node with the given data
  */
-ntree_node *ntree_create_node(int data) {
+// TODO: also take in a custom destructor
+ntree_node *ntree_create_node(void *data) {
     ntree_node *new_node = malloc(sizeof(ntree_node));
     assert(new_node != NULL);
     new_node->parent = NULL;
