@@ -28,7 +28,8 @@
 #define da_is_empty(list) list->count == 0
 
 /**
- * Loops through every _NON-NULL_ value in the array
+ * Loops through every _NON-NULL_ value in the array, binding _i to the index
+ * and _current to the pointer to the current node
  */
 #define da_for_each(list)                                                    \
     void *_current;                                                          \
@@ -38,6 +39,10 @@
             continue;                                                        \
         else
 
+/**
+ * Represents the type of a custom destructor function to clean up resources
+ * associated to the data type stored in this array
+ */
 typedef void (*free_func)(void *);
 
 typedef struct {
