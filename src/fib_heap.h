@@ -36,13 +36,14 @@ typedef int (*cmp_func)(void *a, void *b);
  */
 typedef struct {
     int min_index;
+    int size;
     cmp_func __comparator;
     ntree_node_list *root_list;
 } fib_heap;
 
 fib_heap *fib_heap_create(cmp_func);
 bool fib_heap_is_empty(fib_heap *);
-int fib_heap_size(fib_heap *);
+int fib_heap_root_size(fib_heap *);
 
 ntree_node *fib_heap_push(fib_heap *, void *);
 void *fib_heap_peek(fib_heap *);

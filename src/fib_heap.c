@@ -34,6 +34,7 @@ fib_heap *fib_heap_create(cmp_func __comparator) {
     new_heap->min_index = -1;
     new_heap->root_list = da_create(__free_node);
     new_heap->__comparator = __comparator;
+    new_heap->size = 0;
 
     return new_heap;
 }
@@ -46,9 +47,10 @@ bool fib_heap_is_empty(fib_heap *fheap) {
 }
 
 /**
- * @brief Returns the number of elements in the heap
+ * @brief Returns the number of trees in the heap (i.e the size of the root
+ * list)
  */
-int fib_heap_size(fib_heap *fheap) { return fheap->root_list->count; }
+int fib_heap_root_size(fib_heap *fheap) { return fheap->root_list->count; }
 
 /**
  * @brief Inserts an element into the heap
@@ -56,12 +58,15 @@ int fib_heap_size(fib_heap *fheap) { return fheap->root_list->count; }
 ntree_node *fib_heap_push(fib_heap *fheap, void *data) {
     ntree_node *new_node = ntree_create_node(data);
     da_append(fheap->root_list, new_node);
+    fheap->size++;
 
     if (fheap->min_index == -1 ||
         __is_less_than(fheap, data, fib_heap_peek(fheap))) {
         fheap->min_index = fheap->root_list->count - 1;
     }
 
+    debug_printf("heap state after push");
+    fib_heap_dump(fheap);
     return new_node;
 }
 
@@ -103,6 +108,7 @@ void *fib_heap_pop(fib_heap *fheap) {
     }
 
     debug_printf("end of pop");
+    fheap->size--;
     return min_key;
 }
 
@@ -135,6 +141,7 @@ void fib_heap_merge(fib_heap *self, fib_heap *other) {
     }
 
     debug_printf("heap state after merge:");
+    self->size += other->size;
     fib_heap_dump(self);
 }
 

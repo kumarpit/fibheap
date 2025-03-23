@@ -10,9 +10,11 @@
  *           1 if *a  >  *b
  *           0 if *a  =  *b
  */
+#include "debug.h"
 int cmp_int(void *_a, void *_b) {
-    int *b = (int *)_b;
     int *a = (int *)_a;
+    int *b = (int *)_b;
+    debug_printf("comparing %d %d", *a, *b);
     return (*a > *b) - (*a < *b);
 }
 

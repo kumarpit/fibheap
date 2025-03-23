@@ -33,8 +33,8 @@ $(TEST)/bin/%: $(TEST)/%.c $(TEST_OBJS) | $(TEST)/bin
 test: $(TESTBINS)
 	for test in $(TESTBINS) ; do ./$$test ; done
 
-example: example.c $(OBJS)
-	$(CC) $(CFLAGS) example.c $(OBJS) -o $(EXAMPLE)
+example: $(EXAMPLE).c $(OBJS)
+	$(CC) $(CFLAGS) $(EXAMPLE).c $(OBJS) -o $(EXAMPLE)
 
 clean:
 	rm -r obj
