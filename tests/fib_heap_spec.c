@@ -1,22 +1,44 @@
+#include <assert.h>
 #include <criterion/criterion.h>
 
 #include "../src/fib_heap.h"
+#include "../src/utils.h"
 
-int cmp_int(void *_a, void *_b) {
-    int *b = (int *)_b;
-    int *a = (int *)_a;
-    return (*a > *b) - (*a < *b);
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Test helpers
+//
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @brief Gets the node in the heap at the given index and returns its data cast
+ * as an int pointer and dereferenced
+ */
+int get_index_to_int(fib_heap *fheap, int index) {
+    ntree_node *node = ((ntree_node *)da_get(fheap->root_list, index));
+    assert(node != NULL);
+
+    return to_int(node->data);
 }
 
-int to_int(void *ptr) { return *((int *)ptr); }
+/**
+ * @brief Gets the child of the node at the given index and returns its data
+ * cast as int pointer and dereferenced
+ */
+int get_child_at_index_to_int(fib_heap *fheap, int index) {
+    ntree_node *node = ((ntree_node *)da_get(fheap->root_list, index));
+    assert(node != NULL);
+    ntree_node *child = node->child;
+    assert(child != NULL);
 
-int get_int(fib_heap *fheap, int index) {
-    return to_int(((ntree_node *)da_get(fheap->root_list, index))->data);
+    return to_int(child->data);
 }
 
-int get_child_int(fib_heap *fheap, int index) {
-    return to_int(((ntree_node *)da_get(fheap->root_list, index))->child->data);
-}
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Tests
+//
+//////////////////////////////////////////////////////////////////////////////////////////////////
 
 Test(FibHeap, create) {
     fib_heap *fheap = fib_heap_create(&cmp_int);
@@ -35,7 +57,7 @@ Test(FibHeap, insert) {
         fib_heap_push(fheap, &data[i]);
     }
 
-    cr_assert_eq(1, get_int(fheap, fheap->min_index));
+    cr_assert_eq(1, get_index_to_int(fheap, fheap->min_index));
     cr_assert_eq(3, fheap->root_list->count);
 }
 
@@ -60,21 +82,19 @@ Test(FibHeap, pop) {
         fib_heap_push(fheap, &data[i]);
     }
 
-    // Root list >> 3  2  1
+    // Root list: 3  2  1
     cr_assert_eq(3, fheap->root_list->count);
 
     cr_assert_eq(1, to_int(fib_heap_pop(fheap)));
     cr_assert_eq(1, fheap->root_list->count);
     cr_assert_eq(2, to_int(fib_heap_peek(fheap)));
-    cr_assert_eq(3, get_child_int(fheap, fheap->min_index));
+    cr_assert_eq(3, get_child_at_index_to_int(fheap, fheap->min_index));
 
-    // Root list >> 2--3
-
+    // Root list: 2-3
     cr_assert_eq(2, to_int(fib_heap_pop(fheap)));
     cr_assert_eq(1, fheap->root_list->count);
 
-    // Root list >> 3
-
+    // Root list: 3
     cr_assert_eq(3, to_int(fib_heap_peek(fheap)));
     cr_assert_eq(3, to_int(fib_heap_pop(fheap)));
     cr_assert_eq(0, fheap->root_list->count);
